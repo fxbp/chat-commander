@@ -1,0 +1,30 @@
+{
+  "name": "chat-commander",
+  "version": "1.0.0",
+  "description": "This project is an Electron and JavaScript application designed to connect to the Twitch API to retrieve chat messages in real-time. The application integrates Twitch chat functionality with a game emulator, enabling chat messages to be converted into automated inputs within the emulator.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fxbp/chat-commander.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fxbp/chat-commander/issues"
+  },
+  "homepage": "https://github.com/fxbp/chat-commander#readme",
+  "dependencies": {
+    "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0"
+  }
+}
