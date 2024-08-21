@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const { URLSearchParams } = require('url');
+const tokenStore = require('./tokenStore');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ async function getAccessToken() {
 
     const redirectUri = `http://localhost:${port}/auth/twitch/callback`;
 
+    // Configura la URL de autorización con los scopes adecuados
     const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=chat:read+chat:edit`;
 
     await open(authUrl);
@@ -44,6 +46,10 @@ async function getAccessToken() {
         try {
           const tokenResponse = await axios.post(tokenUrl, params);
           const accessToken = tokenResponse.data.access_token;
+
+          // Guarda el token utilizando tokenStore
+          tokenStore.saveToken(accessToken);
+
           resolve(accessToken);
           res.send('Autenticación exitosa. Puedes cerrar esta ventana.');
         } catch (error) {

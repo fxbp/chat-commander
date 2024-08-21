@@ -1,43 +1,30 @@
-// src/services/twitchApi.js
-const TokenStore = require('../auth/tokenStore'); // Asegúrate de que el path es correcto
+const axios = require('axios');
 
-// Función para realizar una solicitud a la API de Twitch
-async function makeApiRequest(endpoint, token) {
+// Configuración base para la API de Twitch
+const API_URL = 'https://id.twitch.tv/oauth2';
+const VALIDATE_TOKEN_URL = `${API_URL}/validate`;
+
+// Función para validar un token de acceso
+async function validateToken(accessToken) {
   try {
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch(endpoint, {
+    const response = await axios.get(VALIDATE_TOKEN_URL, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'Client-ID': process.env.CLIENT_ID,
-        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
       },
     });
-    return await response.json();
+
+    // Si la respuesta es exitosa, el token es válido
+    return response.data;
   } catch (error) {
-    console.error('Error en la solicitud API:', error);
-    throw new Error('Error en la solicitud API');
+    // Si ocurre un error (por ejemplo, token inválido), retorna null o un mensaje de error
+    console.error(
+      'Error al validar el token:',
+      error.response ? error.response.data : error.message
+    );
+    return null;
   }
 }
 
-// Función para enviar un mensaje al chat de Twitch
-async function sendMessage(channel, message, token) {
-  try {
-    const fetch = (await import('node-fetch')).default;
-    await fetch(`https://tmi.twitch.tv/group/user/${channel}/chatters`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Client-ID': process.env.CLIENT_ID,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        message: message,
-      }),
-    });
-  } catch (error) {
-    console.error('Error al enviar el mensaje:', error);
-    throw new Error('Error al enviar el mensaje');
-  }
-}
-
-module.exports = { makeApiRequest, sendMessage };
+module.exports = {
+  validateToken,
+};
