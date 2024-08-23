@@ -133,3 +133,7 @@ docker-compose.override.yml
 *.vscode/
 *.sublime-project
 *.sublime-workspace
+
+
+# Project
+*token.json
