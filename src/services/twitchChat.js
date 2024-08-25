@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const { BrowserWindow } = require('electron');
 const tokenStore = require('../auth/tokenStore');
+const { interpretAndSendCommands } = require('./emulatorControl');
 
 let chatSocket = null;
 
@@ -29,6 +30,7 @@ function startChat() {
       if (win) {
         win.webContents.send('chat-message', parsedMessage);
       }
+      interpretAndSendCommands([parsedMessage]);
     }
   };
 

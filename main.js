@@ -7,6 +7,9 @@ const { startServer } = require('./src/auth/auth');
 const { validateToken } = require('./src/services/twitchAPI');
 const tokenStore = require('./src/auth/tokenStore'); // Importa el tokenStore
 const { startChat } = require('./src/services/twitchChat'); // Importamos el servicio de chat
+const {
+  startServer: startSocketServer,
+} = require('./src/services/emulatorSocketServer');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -26,6 +29,7 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
   startServer();
+  startSocketServer();
 
   ipcMain.handle('get-access-token', async () => {
     return auth.getAccessToken();
