@@ -4,11 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Commander</title>
+    <style>
+        #chatBox {
+            width: 500px;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: Arial, sans-serif;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Chat Commander</h1>
     <button id="loginButton">Iniciar Sesión</button>
     <button id="validateTokenButton">Validar Token</button>
+    <button id="startButton">Start</button> <!-- Nuevo botón para iniciar la lectura del chat -->
+    <div id="chatBox"></div> <!-- Área para mostrar los mensajes del chat -->
 
     <script src="src/ui/renderer.js"></script>
 </body>

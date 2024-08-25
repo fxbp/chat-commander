@@ -25,3 +25,25 @@ document
       console.error('Error during token validation:', error);
     }
   });
+
+document.getElementById('startButton').addEventListener('click', async () => {
+  try {
+    await ipcRenderer.invoke('start-chat');
+  } catch (error) {
+    console.error('Error starting chat:', error);
+  }
+});
+
+// Manejador para recibir mensajes de chat desde el proceso principal
+ipcRenderer.on('chat-message', (event, message) => {
+  const chatBox = document.getElementById('chatBox');
+  const messageElement = document.createElement('div');
+  messageElement.className = 'message';
+  messageElement.textContent = `${message.timestamp} - ${message.username}: ${message.text}`;
+  chatBox.appendChild(messageElement);
+
+  // Mantener solo los últimos 10 mensajes
+  if (chatBox.children.length > 10) {
+    chatBox.removeChild(chatBox.firstChild);
+  }
+});
