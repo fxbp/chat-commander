@@ -9,7 +9,6 @@ local defaultInput = {
     Down = false,
     L = false,
     Left = false,
-    Power = false,
     R = false,
     Right = false,
     Select = false,

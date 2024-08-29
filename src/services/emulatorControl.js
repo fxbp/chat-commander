@@ -1,16 +1,16 @@
 const { sendCommandToEmulator } = require('./emulatorSocketServer'); // Import the function to send commands
 
 const commandMap = {
-  '!u': 'MOVE_UP',
-  '!d': 'MOVE_DOWN',
-  '!l': 'MOVE_LEFT',
-  '!r': 'MOVE_RIGHT',
-  '!a': 'BUTTON_A',
-  '!b': 'BUTTON_B',
-  '!st': 'BUTTON_START',
-  '!sl': 'BUTTON_SELECT',
-  '!lb': 'BUTTON_L',
-  '!rb': 'BUTTON_R',
+  '!u': 'Up',
+  '!d': 'Down',
+  '!l': 'Left',
+  '!r': 'Right',
+  '!a': 'A',
+  '!b': 'B',
+  '!st': 'Start',
+  '!sl': 'Select',
+  '!lb': 'L',
+  '!rb': 'R',
 };
 
 function sendCommand(command) {
@@ -21,6 +21,8 @@ function sendCommand(command) {
 function interpretAndSendCommands(messages) {
   messages.forEach((message) => {
     const command = commandMap[message.text];
+    console.log('this is the message');
+    console.log(message);
     if (command) {
       sendCommand(command);
     } else {

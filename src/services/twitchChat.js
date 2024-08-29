@@ -47,8 +47,13 @@ function parseMessage(rawMessage) {
   const messageParts = rawMessage.split(' ');
   if (messageParts[1] === 'PRIVMSG') {
     const username = messageParts[0].split('!')[0].substring(1);
-    const messageText = messageParts.slice(3).join(' ').substring(1);
+    const messageText = messageParts
+      .slice(3)
+      .join(' ')
+      .substring(1)
+      .replace(/(\r\n|\n|\r)/g, '');
     const timestamp = new Date().toLocaleTimeString();
+
     return {
       username,
       text: messageText,
