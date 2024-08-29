@@ -1,12 +1,12 @@
-require('dotenv').config(); // Carga las variables de entorno
+require('dotenv').config();
 
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const auth = require('./src/auth/auth');
 const { startServer } = require('./src/auth/auth');
 const { validateToken } = require('./src/services/twitchAPI');
-const tokenStore = require('./src/auth/tokenStore'); // Importa el tokenStore
-const { startChat } = require('./src/services/twitchChat'); // Importamos el servicio de chat
+const tokenStore = require('./src/auth/tokenStore');
+const { startChat } = require('./src/services/twitchChat');
 const {
   startServer: startSocketServer,
 } = require('./src/services/emulatorSocketServer');
@@ -35,24 +35,24 @@ app.whenReady().then(() => {
     return auth.getAccessToken();
   });
 
-  // Manejador para validar el token leído desde tokenStore
+  // Handler to validate the token read from tokenStore
   ipcMain.handle('validate-token', async () => {
-    const token = tokenStore.loadToken(); // Lee el token desde tokenStore
+    const token = tokenStore.loadToken(); // Read the token from tokenStore
     if (!token) {
-      throw new Error('No se encontró ningún token');
+      throw new Error('No token found');
     }
     return await validateToken(token);
   });
 
   ipcMain.handle('start-chat', async () => {
-    startChat(); // Llamada al servicio de chat de Twitch
+    startChat(); // Call the Twitch chat service
   });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  // Verifica si el servidor Express está escuchando
+  // Check if the Express server is listening
   console.log('App is ready and server should be running');
 });
 

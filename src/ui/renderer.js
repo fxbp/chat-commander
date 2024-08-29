@@ -4,7 +4,7 @@ document.getElementById('loginButton').addEventListener('click', async () => {
   try {
     const token = await ipcRenderer.invoke('get-access-token');
     console.log('Access Token:', token);
-    // Aquí puedes hacer algo con el token, como mostrar un mensaje o iniciar otra función
+    // Here you can do something with the token, like displaying a message or starting another function
   } catch (error) {
     console.error('Error during authentication:', error);
   }
@@ -14,12 +14,12 @@ document
   .getElementById('validateTokenButton')
   .addEventListener('click', async () => {
     try {
-      // Llama al proceso principal para validar el token almacenado
+      // Call the main process to validate the stored token
       const result = await ipcRenderer.invoke('validate-token');
       if (result) {
-        alert('El token es válido. Usuario: ' + result.login);
+        alert('The token is valid. User: ' + result.login);
       } else {
-        alert('El token no es válido.');
+        alert('The token is not valid.');
       }
     } catch (error) {
       console.error('Error during token validation:', error);
@@ -34,7 +34,7 @@ document.getElementById('startButton').addEventListener('click', async () => {
   }
 });
 
-// Manejador para recibir mensajes de chat desde el proceso principal
+// Handler to receive chat messages from the main process
 ipcRenderer.on('chat-message', (event, message) => {
   const chatBox = document.getElementById('chatBox');
   const messageElement = document.createElement('div');
@@ -42,7 +42,7 @@ ipcRenderer.on('chat-message', (event, message) => {
   messageElement.textContent = `${message.timestamp} - ${message.username}: ${message.text}`;
   chatBox.appendChild(messageElement);
 
-  // Mantener solo los últimos 10 mensajes
+  // Keep only the last 10 messages
   if (chatBox.children.length > 10) {
     chatBox.removeChild(chatBox.firstChild);
   }

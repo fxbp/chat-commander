@@ -1,8 +1,8 @@
--- Configuración inicial
+-- Initial configuration
 comm.socketServerSetTimeout(1)
 comm.socketServerSend("Game Starting!")
 
--- Tabla de entradas por defecto
+-- Default input table
 local defaultInput = {
     A = false,
     B = false,
@@ -17,7 +17,7 @@ local defaultInput = {
     Up = false
 }
 
--- Mapeo de comandos a botones
+-- Mapping of commands to buttons
 local commandToButton = {
     up = 'Up',
     down = 'Down',
@@ -31,7 +31,7 @@ local commandToButton = {
     rb = 'R'
 }
 
--- Función para copiar una tabla
+-- Function to copy a table
 local function tableCopy(original)
     local copy = {}
     for k, v in pairs(original) do
@@ -40,50 +40,50 @@ local function tableCopy(original)
     return copy
 end
 
--- Función para actualizar y enviar el estado del juego
+-- Function to update and send the game state
 local function handleInput(command)
-    -- Crear una copia de la tabla de entradas por defecto
+    -- Create a copy of the default input table
     local input = tableCopy(defaultInput)
     
-    -- Actualizar la entrada según el comando
+    -- Update the input according to the command
     local button = commandToButton[command]
     if button then
         input[button] = true
-        joypad.set(input) -- Activar la tecla
-        emu.frameadvance() -- Avanzar un frame para procesar la entrada
+        joypad.set(input) -- Activate the key
+        emu.frameadvance() -- Advance a frame to process the input
         
-        -- Desactivar la tecla
+        -- Deactivate the key
         input[button] = false
         joypad.set(input)
-        emu.frameadvance() -- Avanzar otro frame para asegurar que la entrada sea procesada
+        emu.frameadvance() -- Advance another frame to ensure the input is processed
         
-        -- Confirmar recepción del comando
+        -- Confirm the command was received
         comm.socketServerSend(command:upper() .. " Received")
     else
-        comm.socketServerSend("Error: Comando desconocido: " .. command)
+        comm.socketServerSend("Error: Unknown command: " .. command)
     end
 end
 
--- Bucle principal
+-- Main loop
 while true do
-    -- Intentar recibir una respuesta del servidor de sockets
+    -- Attempt to receive a response from the socket server
     local success, line = pcall(comm.socketServerResponse)
     if success then
-        -- Verificar si los datos recibidos no están vacíos
+        -- Check if the received data is not empty
         if line and line:match("%S") then
-            -- Limpiar la línea de posibles espacios en blanco y convertir a minúsculas
+            -- Clean the line of possible whitespace and convert to lowercase
             line = line:match("^%s*(.-)%s*$"):lower()
             
-            -- Registro de datos recibidos
-            print("Recibido: " .. line)
+            -- Log received data
+            print("Received: " .. line)
             
-            -- Manejar la entrada solo si el comando es válido
+            -- Handle input only if the command is valid
             handleInput(line)
         end
     else
-        comm.socketServerSend("Error: No se pudo recibir datos del socket")
+        comm.socketServerSend("Error: Could not receive data from socket")
     end
     emu.frameadvance()
 end
 
-print("Script finalizado")
+print("Script finished")

@@ -1,4 +1,4 @@
-const { sendCommandToEmulator } = require('./emulatorSocketServer'); // Importa la función para enviar comandos
+const { sendCommandToEmulator } = require('./emulatorSocketServer'); // Import the function to send commands
 
 const commandMap = {
   '!u': 'MOVE_UP',
@@ -14,7 +14,7 @@ const commandMap = {
 };
 
 function sendCommand(command) {
-  // Llama a la función para enviar el comando al emulador
+  // Calls the function to send the command to the emulator
   sendCommandToEmulator(command);
 }
 
@@ -24,7 +24,7 @@ function interpretAndSendCommands(messages) {
     if (command) {
       sendCommand(command);
     } else {
-      console.log(`Comando no reconocido: ${message.text}`);
+      console.log(`Chat Commander - Unrecognized command: ${message.text}`);
     }
   });
 }

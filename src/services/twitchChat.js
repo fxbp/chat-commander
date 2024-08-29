@@ -7,10 +7,10 @@ let chatSocket = null;
 
 function startChat() {
   const token = tokenStore.loadToken();
-  const username = process.env.TWITCH_USERNAME; // Tu nombre de usuario de Twitch
+  const username = process.env.TWITCH_USERNAME; // Your Twitch username
 
   if (!token || !username) {
-    console.error('Token de acceso o nombre de usuario no proporcionados.');
+    console.error('Access token or username not provided.');
     return;
   }
 
@@ -20,7 +20,7 @@ function startChat() {
     chatSocket.send(`PASS oauth:${token}`);
     chatSocket.send(`NICK ${username}`);
     chatSocket.send(`JOIN #${username}`);
-    console.log(`Conectado al chat de Twitch como ${username}`);
+    console.log(`Connected to Twitch chat as ${username}`);
   };
 
   chatSocket.onmessage = (message) => {
@@ -35,11 +35,11 @@ function startChat() {
   };
 
   chatSocket.onclose = () => {
-    console.log('Desconectado del chat de Twitch');
+    console.log('Disconnected from Twitch chat');
   };
 
   chatSocket.onerror = (error) => {
-    console.error('Error en el chat de Twitch:', error);
+    console.error('Error in Twitch chat:', error);
   };
 }
 
