@@ -14,24 +14,24 @@ async function getAccessToken() {
     const clientSecret = process.env.CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      throw new Error('CLIENT_ID o CLIENT_SECRET no están definidos');
+      throw new Error('CLIENT_ID or CLIENT_SECRET are not defined');
     }
 
     const redirectUri = `http://localhost:${port}/auth/twitch/callback`;
 
-    // Configura la URL de autorización con los scopes adecuados
+    // Configure the authorization URL with the appropriate scopes
     const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=chat:read+chat:edit`;
 
     await open(authUrl);
 
     return new Promise((resolve, reject) => {
-      // Ruta del callback en Express
+      // Callback route in Express
       app.get('/auth/twitch/callback', async (req, res) => {
         const authCode = req.query.code;
 
         if (!authCode) {
-          reject('No se recibió el código de autorización');
-          res.send('Falló la autenticación.');
+          reject('Authorization code not received');
+          res.send('Authentication failed.');
           return;
         }
 
@@ -47,26 +47,26 @@ async function getAccessToken() {
           const tokenResponse = await axios.post(tokenUrl, params);
           const accessToken = tokenResponse.data.access_token;
 
-          // Guarda el token utilizando tokenStore
+          // Save the token using tokenStore
           tokenStore.saveToken(accessToken);
 
           resolve(accessToken);
-          res.send('Autenticación exitosa. Puedes cerrar esta ventana.');
+          res.send('Authentication successful. You can close this window.');
         } catch (error) {
-          reject('Falló la obtención del token de acceso');
-          res.send('Falló la autenticación.');
+          reject('Failed to obtain access token');
+          res.send('Authentication failed.');
         }
       });
     });
   } catch (error) {
-    console.error('Error durante la autenticación:', error);
-    throw new Error('Falló la autenticación');
+    console.error('Error during authentication:', error);
+    throw new Error('Authentication failed');
   }
 }
 
 function startServer() {
   app.listen(port, () => {
-    console.log(`Servidor en ejecución en http://localhost:${port}/`); // Log para confirmar que el servidor está escuchando
+    console.log(`Server running at http://localhost:${port}/`); // Log to confirm the server is listening
   });
 }
 

@@ -20,42 +20,39 @@ This project offers an innovative solution to enhance interactivity during Twitc
 
 This project is ideal for developers interested in creating interactive applications and integrating live streaming platforms with customized gaming experiences.
 
-## Conexion con Twitch
+## Connection with Twitch
 
-Se requiere integracion con Twitch, para hacerlo se utiliza la API.
+ntegration with Twitch is required, and for this, the Twitch API is used.
 
-Es necesario registrar una aplicacion nueva para poder autorizar mediante Oauth la aplicacion Electron con el usuario de twitch [Registrar aplicacion](https://dev.twitch.tv/docs/authentication/register-app/)
+A new application must be registered to authorize the Electron application via OAuth with the Twitch user [ Register Application](https://dev.twitch.tv/docs/authentication/register-app/)
 
-Con esto se obtiene el client-id y el secret-id que esta usando la aplicacion electron para conectarse a la api de twitch.
+This provides the client-id and client-secret that the Electron application uses to connect to the Twitch API.
 
-### Configuración
+### Configuration
 
-Actualmente se usa el archivo .env en el root del proyecto con las siguientes claves:
+Currently, a .env file is used in the root of the project with the following keys:
 
 ```
-CLIENT_ID={client-id obtenido al crear la aplicacion en el portal de desarrollo de twitch}
-CLIENT_SECRET={client-secret obtenido al crear la applicacion en el portarl de desarrollo de twitch}
+CLIENT_ID={client-id obtained when creating the application in the Twitch development portal}
+CLIENT_SECRET={client-secret obtained when creating the application in the Twitch development portal}
 REDIRECT_URI=http://localhost:3000
-TWITCH_USERNAME={nombre_usuario_twitch}
+TWITCH_USERNAME={twitch_username}
 
 ```
 
-## Integracion con emulador
+## Emulator Integration
 
-En esta version se utiliza scripting mediante lenguaje LUA, para enviar las "pulsaciones" de las teclas de la aplicacion electron al emulador seleccionado.
-El emulador debe permitir la opcion de scripting LUA.
+In this version, scripting is done using the Lua language to send key presses from the Electron application to the selected emulator. The emulator must support the Lua scripting option.
 
-Es necesario tener LUA instalado en el sistema, ademas de incluirlo en el PATH para poder ejecutar correctamente los scripts.
+### Emulator
 
-### Emulador
-
-El emulador usado como prueba es el BizHawk (2.9.1) que permite la ejecucion de scripts LUA. El emulador ya tiene Lua instalado
+The emulator used for testing is BizHawk (2.9.1), which supports the execution of Lua scripts. The emulator already has Lua installed.
 
 ### Sockets
 
-Para la comunicacion de las teclas, la opcion mas viable con el emulador encendido es usar sockets. Con sockets el emulador sera cliente, ecuchando en un puerto determinado y la aplicacion Electron sera el servidor, ira enviado los botones a pulsar.
+For the communication of key presses, the most viable option with the emulator running is to use sockets. With sockets, the emulator will be the client, listening on a specific port, and the Electron application will be the server, sending the buttons to press.
 
-Para poder usar los sockets en el emulador hay que iniciar el emulador indicandole la ip y el puerto al que tiene que escuchar:
+To use sockets with the emulator, the emulator must be started by specifying the IP and port to listen to:
 
 ```
 EmuHawk.exe --socket_ip=127.0.0.1 --socket_port=55355
@@ -63,7 +60,6 @@ EmuHawk.exe --socket_ip=127.0.0.1 --socket_port=55355
 
 ### Script
 
-El script de lua se puede encontrar en el directorio "emulator". Para usarlo se debe arrancar el emulador y cargar el juego. Luego ir al menú: Tools > Lua Console.
-Se abrirá la consola Lua. Aqui tenemos que cargar el script lua que usa los sockets para recibir la siguiente tecla a pulsar.
+The Lua script can be found in the "emulator" directory. To use it, start the emulator and load the game. Then go to the menu: Tools > Lua Console. The Lua console will open. Here, you need to load the Lua script that uses sockets to receive the next key press.
 
-De momento solo se permite una pulsacion de tecla cada vez. El script es **simple-bizhawk-control.lua**
+Currently, only one key press is allowed at a time. The script is **simple-bizhawk-control.lua**.

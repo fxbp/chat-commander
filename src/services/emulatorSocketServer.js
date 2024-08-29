@@ -1,18 +1,18 @@
 const net = require('net');
 
-// Crea y configura el servidor de sockets
+// Create and configure the socket server
 const server = net.createServer((socket) => {
-  console.log('Cliente conectado.');
+  console.log('Client connected.');
 
   socket.on('data', (data) => {
-    console.log('Recibido:', data.toString());
-    // Aquí podrías manejar los comandos y enviar respuestas si es necesario
-    // Por ejemplo, podrías enviar un comando al emulador aquí
-    // socket.write('Comando enviado al emulador');
+    console.log('Received:', data.toString());
+    // Here you could handle commands and send responses if necessary
+    // For example, you could send a command to the emulator here
+    // socket.write('Command sent to the emulator');
   });
 
   socket.on('end', () => {
-    console.log('Cliente desconectado.');
+    console.log('Client disconnected.');
   });
 
   socket.on('error', (err) => {
@@ -22,18 +22,18 @@ const server = net.createServer((socket) => {
 
 const PORT = 55355;
 
-// Función para iniciar el servidor de sockets
+// Function to start the socket server
 function startServer() {
   server.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
   });
 }
 
-// Función para enviar comandos al emulador (ejemplo)
+// Function to send commands to the emulator (example)
 function sendCommandToEmulator(command) {
-  // Enviar el comando al emulador usando el socket
-  // Aquí necesitarías manejar la lógica para conectarte y enviar comandos
-  console.log(`Comando enviado al emulador: ${command}`);
+  // Send the command to the emulator using the socket
+  // Here you would need to handle the logic to connect and send commands
+  console.log(`Command sent to the emulator: ${command}`);
 }
 
 module.exports = {
