@@ -11,14 +11,7 @@ This project is an Electron and JavaScript application designed to connect to th
 
 This project offers an innovative solution to enhance interactivity during Twitch streams by allowing viewers to directly influence the gaming experience through their chat messages.
 
-### Requirements
 
-- Basic knowledge of JavaScript and Node.js
-- Familiarity with the Twitch API
-- Experience with Electron for desktop applications
-- Understanding of game emulator integration and input handling
-
-This project is ideal for developers interested in creating interactive applications and integrating live streaming platforms with customized gaming experiences.
 
 ## Connection with Twitch
 
