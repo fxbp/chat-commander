@@ -2,6 +2,8 @@
 comm.socketServerSetTimeout(1)
 comm.socketServerSend("Game Starting!")
 
+
+
 -- Default input table
 local defaultInput = {
     A = false,
@@ -41,18 +43,24 @@ end
 
 -- Function to update and send the game state
 local function handleInput(command)
+    print("handleInput")
+    print(command)
     -- Create a copy of the default input table
     local input = tableCopy(defaultInput)
     
     -- Update the input according to the command
     local button = commandToButton[command]
+    print("button")
+    print(button)
     if button then
-        input[button] = true
+        input[button] = "True"
+        print("input")
+        print(input)
         joypad.set(input) -- Activate the key
         emu.frameadvance() -- Advance a frame to process the input
         
         -- Deactivate the key
-        input[button] = false
+        input[button] = "False"
         joypad.set(input)
         emu.frameadvance() -- Advance another frame to ensure the input is processed
         
@@ -63,26 +71,24 @@ local function handleInput(command)
     end
 end
 
+print(joypad.get())
+
 -- Main loop
 while true do
+   
     -- Attempt to receive a response from the socket server
     local success, line = pcall(comm.socketServerResponse)
-    if success then
-        -- Check if the received data is not empty
-        if line and line:match("%S") then
-            -- Clean the line of possible whitespace and convert to lowercase
-            line = line:match("^%s*(.-)%s*$"):lower()
-            
-            -- Log received data
-            print("Received: " .. line)
-            
-            -- Handle input only if the command is valid
-            handleInput(line)
-        end
-    else
-        comm.socketServerSend("Error: Could not receive data from socket")
+    print(line)
+    local isNotEmpty = line and line:match("%S") 
+    if (isNotEmpty) then
+        print("inside if")
+        -- Handle the valid message
+        handleInput(line:lower())
     end
     emu.frameadvance()
+   
+    -- Introduce a delay by advancing frames (adjust the number if needed)
+    
 end
 
 print("Script finished")
