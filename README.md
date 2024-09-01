@@ -11,13 +11,11 @@ This project is an Electron and JavaScript application designed to connect to th
 
 This project offers an innovative solution to enhance interactivity during Twitch streams by allowing viewers to directly influence the gaming experience through their chat messages.
 
-
-
 ## Connection with Twitch
 
-ntegration with Twitch is required, and for this, the Twitch API is used.
+Integration with Twitch is required, and for this, the Twitch API is used.
 
-A new application must be registered to authorize the Electron application via OAuth with the Twitch user [ Register Application](https://dev.twitch.tv/docs/authentication/register-app/)
+A new application must be registered to authorize the Electron application via OAuth with the Twitch user [ Register Application (https://dev.twitch.tv/docs/authentication/register-app/)](https://dev.twitch.tv/docs/authentication/register-app/)
 
 This provides the client-id and client-secret that the Electron application uses to connect to the Twitch API.
 
