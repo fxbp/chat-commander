@@ -1,16 +1,16 @@
 const { sendCommandToEmulator } = require('./emulatorSocketServer'); // Import the function to send commands
 
 const commandMap = {
-  '!u': 'Up',
-  '!d': 'Down',
-  '!l': 'Left',
-  '!r': 'Right',
-  '!a': 'A',
-  '!b': 'B',
-  '!st': 'Start',
-  '!sl': 'Select',
-  '!lb': 'L',
-  '!rb': 'R',
+  u: 'Up',
+  d: 'Down',
+  l: 'Left',
+  r: 'Right',
+  a: 'A',
+  b: 'B',
+  st: 'Start',
+  sl: 'Select',
+  lb: 'L',
+  rb: 'R',
 };
 
 function sendCommand(command) {
