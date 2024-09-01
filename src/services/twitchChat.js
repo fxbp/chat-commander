@@ -5,19 +5,35 @@ const { interpretAndSendCommands } = require('./emulatorControl');
 
 let chatSocket = null;
 
-function startChat() {
-  const token = tokenStore.loadToken();
+async function startChat() {
+  let tokenData = tokenStore.loadToken();
   const username = process.env.TWITCH_USERNAME; // Your Twitch username
 
-  if (!token || !username) {
+  if (!tokenData || !username) {
     console.error('Access token or username not provided.');
     return;
+  }
+
+  const tokenExpiryTime = tokenData.expires_in * 1000; // convert to milliseconds
+  const tokenAcquisitionTime = new Date().getTime();
+
+  // Check if token is near expiration and refresh it
+  const currentTime = new Date().getTime();
+  if (currentTime - tokenAcquisitionTime >= tokenExpiryTime - 300000) {
+    // Refresh 5 minutes before expiry
+    try {
+      const newAccessToken = await refreshAccessToken();
+      tokenData.access_token = newAccessToken;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      return;
+    }
   }
 
   chatSocket = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
 
   chatSocket.onopen = () => {
-    chatSocket.send(`PASS oauth:${token}`);
+    chatSocket.send(`PASS oauth:${tokenData.access_token}`);
     chatSocket.send(`NICK ${username}`);
     chatSocket.send(`JOIN #${username}`);
     console.log(`Connected to Twitch chat as ${username}`);
