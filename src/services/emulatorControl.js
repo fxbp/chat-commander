@@ -21,8 +21,6 @@ function sendCommand(command) {
 function interpretAndSendCommands(messages) {
   messages.forEach((message) => {
     const command = commandMap[message.text];
-    console.log('this is the message');
-    console.log(message);
     if (command) {
       sendCommand(command);
     } else {

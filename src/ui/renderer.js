@@ -3,7 +3,6 @@ const { ipcRenderer } = require('electron');
 document.getElementById('loginButton').addEventListener('click', async () => {
   try {
     const token = await ipcRenderer.invoke('get-access-token');
-    console.log('Access Token:', token);
     // Here you can do something with the token, like displaying a message or starting another function
   } catch (error) {
     console.error('Error during authentication:', error);

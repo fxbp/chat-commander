@@ -14,7 +14,6 @@ async function validateToken(accessToken) {
     });
 
     // If the response is successful, the token is valid
-    console.log(response.data);
     return response.data;
   } catch (error) {
     // If an error occurs (e.g., invalid token), return null or an error message
