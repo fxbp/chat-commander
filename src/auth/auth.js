@@ -45,12 +45,12 @@ async function getAccessToken() {
 
         try {
           const tokenResponse = await axios.post(tokenUrl, params);
-          const accessToken = tokenResponse.data.access_token;
+          const tokenData = tokenResponse.data;
 
-          // Save the token using tokenStore
-          tokenStore.saveToken(accessToken);
+          // Save the entire token object using tokenStore
+          tokenStore.saveToken(tokenData);
 
-          resolve(accessToken);
+          resolve(tokenData.access_token);
           res.send('Authentication successful. You can close this window.');
         } catch (error) {
           reject('Failed to obtain access token');
@@ -64,6 +64,38 @@ async function getAccessToken() {
   }
 }
 
+// Function to refresh the token
+async function refreshAccessToken() {
+  const tokenData = tokenStore.loadToken();
+
+  if (!tokenData || !tokenData.refresh_token) {
+    throw new Error('No refresh token available');
+  }
+
+  try {
+    const clientId = process.env.CLIENT_ID;
+    const clientSecret = process.env.CLIENT_SECRET;
+
+    const params = new URLSearchParams();
+    params.append('client_id', clientId);
+    params.append('client_secret', clientSecret);
+    params.append('grant_type', 'refresh_token');
+    params.append('refresh_token', tokenData.refresh_token);
+
+    const tokenUrl = 'https://id.twitch.tv/oauth2/token';
+    const response = await axios.post(tokenUrl, params);
+    const newTokenData = response.data;
+
+    // Save the new token data
+    tokenStore.saveToken(newTokenData);
+    console.log('Refreshed Token');
+    return newTokenData.access_token;
+  } catch (error) {
+    console.error('Error refreshing the access token:', error);
+    throw new Error('Token refresh failed');
+  }
+}
+
 function startServer() {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`); // Log to confirm the server is listening
@@ -73,4 +105,5 @@ function startServer() {
 module.exports = {
   startServer,
   getAccessToken,
+  refreshAccessToken,
 };

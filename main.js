@@ -41,7 +41,7 @@ app.whenReady().then(() => {
     if (!token) {
       throw new Error('No token found');
     }
-    return await validateToken(token);
+    return await validateToken(token.access_token);
   });
 
   ipcMain.handle('start-chat', async () => {
