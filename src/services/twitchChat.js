@@ -1,10 +1,7 @@
-// src/services/twitchChat.js
-
 const WebSocket = require('ws');
-const { BrowserWindow } = require('electron');
 const tokenStore = require('../auth/tokenStore');
-const { interpretAndSendCommands } = require('./emulatorControl');
 const { refreshAccessToken } = require('../auth/auth');
+const { notify } = require('../comunication/twitchChatNotifier');
 
 let chatSocket = null;
 let reconnectTimeout = null;
@@ -95,8 +92,7 @@ function handleSocketMessage(message) {
 
   const parsedMessage = parseChatMessage(rawMessage);
   if (parsedMessage) {
-    sendToBrowser(parsedMessage);
-    interpretAndSendCommands([parsedMessage]);
+    notify(parsedMessage);
   }
 }
 
@@ -130,14 +126,6 @@ function parseChatMessage(rawMessage) {
     };
   }
   return null;
-}
-
-// Send parsed chat message to the Electron BrowserWindow
-function sendToBrowser(parsedMessage) {
-  const win = BrowserWindow.getAllWindows()[0];
-  if (win) {
-    win.webContents.send('chat-message', parsedMessage);
-  }
 }
 
 // Handle WebSocket close event

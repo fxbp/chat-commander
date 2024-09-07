@@ -10,6 +10,9 @@ const { startChat } = require('./src/services/twitchChat');
 const {
   startServer: startSocketServer,
 } = require('./src/services/emulatorSocketServer');
+const {
+  initializeSubscriptions,
+} = require('./src/comunication/subscriptionManager');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -27,6 +30,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  initializeSubscriptions();
+
   createWindow();
   startServer();
   startSocketServer();
