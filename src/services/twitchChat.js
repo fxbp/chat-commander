@@ -1,10 +1,8 @@
-// src/services/twitchChat.js
-
 const WebSocket = require('ws');
-const { BrowserWindow } = require('electron');
 const tokenStore = require('../auth/tokenStore');
-const { interpretAndSendCommands } = require('./emulatorControl');
 const { refreshAccessToken } = require('../auth/auth');
+const { notify } = require('../comunication/twitchChatNotifier');
+const { subscribe } = require('../comunication/inactiveChatNotifier');
 
 let chatSocket = null;
 let reconnectTimeout = null;
@@ -76,6 +74,14 @@ function initializeChatSocket(accessToken, username) {
   chatSocket.onerror = (error) => handleSocketError(error);
 }
 
+//sends message to chat
+function sendToChat(message) {
+  if (message.username === process.env.TWITCH_USERNAME) {
+    chatSocket.send(`PRIVMSG #${process.env.TWITCH_USERNAME} :${message.text}`);
+    console.log(`Sent message to Twitch chat: ${message.text}`);
+  }
+}
+
 // Handle WebSocket open event
 function handleSocketOpen(accessToken, username) {
   chatSocket.send(`PASS oauth:${accessToken}`);
@@ -95,8 +101,7 @@ function handleSocketMessage(message) {
 
   const parsedMessage = parseChatMessage(rawMessage);
   if (parsedMessage) {
-    sendToBrowser(parsedMessage);
-    interpretAndSendCommands([parsedMessage]);
+    notify(parsedMessage);
   }
 }
 
@@ -132,14 +137,6 @@ function parseChatMessage(rawMessage) {
   return null;
 }
 
-// Send parsed chat message to the Electron BrowserWindow
-function sendToBrowser(parsedMessage) {
-  const win = BrowserWindow.getAllWindows()[0];
-  if (win) {
-    win.webContents.send('chat-message', parsedMessage);
-  }
-}
-
 // Handle WebSocket close event
 function handleSocketClose() {
   console.log('Disconnected from Twitch chat');
@@ -166,4 +163,5 @@ function attemptReconnect() {
 
 module.exports = {
   startChat,
+  sendToChat,
 };
