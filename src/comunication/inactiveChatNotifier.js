@@ -11,9 +11,12 @@ function unsubscribe(subscriber) {
 function notify(message) {
   subscribers.forEach((subscriber) => subscriber(message));
 }
+function sendMessage(message) {
+  notify(message);
+}
 
 module.exports = {
   subscribe,
   unsubscribe,
-  notify,
+  sendMessage,
 };

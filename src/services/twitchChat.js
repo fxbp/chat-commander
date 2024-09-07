@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const tokenStore = require('../auth/tokenStore');
 const { refreshAccessToken } = require('../auth/auth');
 const { notify } = require('../comunication/twitchChatNotifier');
+const { subscribe } = require('../comunication/inactiveChatNotifier');
 
 let chatSocket = null;
 let reconnectTimeout = null;
@@ -71,6 +72,14 @@ function initializeChatSocket(accessToken, username) {
   chatSocket.onmessage = (message) => handleSocketMessage(message);
   chatSocket.onclose = () => handleSocketClose();
   chatSocket.onerror = (error) => handleSocketError(error);
+}
+
+//sends message to chat
+function sendToChat(message) {
+  if (message.username === process.env.TWITCH_USERNAME) {
+    chatSocket.send(`PRIVMSG #${process.env.TWITCH_USERNAME} :${message.text}`);
+    console.log(`Sent message to Twitch chat: ${message.text}`);
+  }
 }
 
 // Handle WebSocket open event
@@ -154,4 +163,5 @@ function attemptReconnect() {
 
 module.exports = {
   startChat,
+  sendToChat,
 };
