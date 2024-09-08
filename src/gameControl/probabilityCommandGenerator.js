@@ -1,17 +1,17 @@
-const { sendMessage } = require('../comunication/inactiveChatNotifier');
+const { sendMessage } = require('../comunication/emulatorNotifier');
 
 const RANDOM_COMMAND_INTERVAL = 2 * 1000; // 1 second
 
 // Define the available commands and their corresponding probabilities
 const COMMANDS = [
-  { command: 'up', probability: 0.3 },
-  { command: 'down', probability: 0.3 },
-  { command: 'left', probability: 0.2 },
-  { command: 'right', probability: 0.2 },
+  { command: 'u', probability: 0.3 },
+  { command: 'd', probability: 0.3 },
+  { command: 'l', probability: 0.2 },
+  { command: 'r', probability: 0.2 },
   { command: 'a', probability: 0.15 },
   { command: 'b', probability: 0.05 },
-  { command: 'start', probability: 0.1 },
-  { command: 'select', probability: 0.05 },
+  { command: 'st', probability: 0.1 },
+  { command: 'sl', probability: 0.05 },
 ];
 
 // Calculate cumulative probabilities for easier selection

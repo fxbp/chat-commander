@@ -34,12 +34,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  initializeSubscriptions();
-
   createWindow();
   startServer();
   startSocketServer();
-  initializeActivityMonitor(true);
 
   ipcMain.handle('get-access-token', async () => {
     return auth.getAccessToken();
@@ -55,7 +52,11 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('start-chat', async () => {
-    startChat(); // Call the Twitch chat service
+    await startChat(); // Call the Twitch chat service
+    initializeSubscriptions();
+    setTimeout(() => {
+      initializeActivityMonitor(true);
+    }, 2000);
   });
 
   app.on('activate', () => {

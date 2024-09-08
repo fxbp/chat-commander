@@ -1,4 +1,4 @@
-const { sendMessage } = require('../comunication/inactiveChatNotifier');
+const { sendMessage } = require('../comunication/emulatorNotifier');
 const RANDOM_COMMANDS = ['u', 'd', 'l', 'r', 'a', 'b', 'st'];
 const RANDOM_COMMAND_INTERVAL = 1000; // 1 second
 let randomCommandInterval = null;

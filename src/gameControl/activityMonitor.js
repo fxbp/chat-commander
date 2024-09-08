@@ -1,3 +1,5 @@
+const { sendMessage } = require('../comunication/inactiveChatNotifier');
+
 const USERNAME_TO_RESET_TIMER = process.env.TWITCH_USERNAME;
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
@@ -9,10 +11,35 @@ function setCommandGenerator(generator) {
   currentCommandGenerator = generator;
 }
 
+// Function to send a message to the chat
+function sendStartMessage() {
+  const startMessage = {
+    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    text: 'Command generator has started!',
+    timestamp: new Date().toLocaleTimeString(),
+  };
+
+  sendMessage(startMessage);
+  console.log('Sent start message to chat.');
+}
+
+// Function to send a message to the chat
+function sendStopMessage() {
+  const startMessage = {
+    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    text: 'Command generator has stopped!',
+    timestamp: new Date().toLocaleTimeString(),
+  };
+
+  sendMessage(startMessage);
+  console.log('Sent Stop message to chat.');
+}
+
 // Start sending commands using the current strategy
 function startInactivityTimer() {
   inactivityTimer = setTimeout(() => {
     if (currentCommandGenerator) {
+      sendStartMessage();
       currentCommandGenerator.start();
     }
   }, INACTIVITY_TIMEOUT);
@@ -26,6 +53,7 @@ function stopInactivityTimer() {
   }
 
   if (currentCommandGenerator) {
+    sendStopMessage();
     currentCommandGenerator.stop();
   }
 }
@@ -50,6 +78,7 @@ function handleMessage(username) {
     // Reset the inactivity timer and stop the command generator
     resetInactivityTimer(username);
     if (currentCommandGenerator) {
+      sendStopMessage();
       currentCommandGenerator.stop();
     }
   }

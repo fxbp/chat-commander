@@ -1,22 +1,9 @@
-let subscribers = [];
+const { createPubSub } = require('./pubsub');
 
-function subscribe(subscriber) {
-  subscribers.push(subscriber);
-}
-
-function unsubscribe(subscriber) {
-  subscribers = subscribers.filter((sub) => sub !== subscriber);
-}
-
-function notify(message) {
-  subscribers.forEach((subscriber) => subscriber(message));
-}
-function sendMessage(message) {
-  notify(message);
-}
+const inactiveChatNotifier = createPubSub();
 
 module.exports = {
-  subscribe,
-  unsubscribe,
-  sendMessage,
+  subscribe: inactiveChatNotifier.subscribe.bind(inactiveChatNotifier),
+  unsubscribe: inactiveChatNotifier.unsubscribe.bind(inactiveChatNotifier),
+  sendMessage: inactiveChatNotifier.notify.bind(inactiveChatNotifier),
 };
