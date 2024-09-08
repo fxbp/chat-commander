@@ -53,7 +53,9 @@ function stopInactivityTimer() {
   }
 
   if (currentCommandGenerator) {
-    sendStopMessage();
+    if (currentCommandGenerator.isActive()) {
+      sendStopMessage();
+    }
     currentCommandGenerator.stop();
   }
 }
@@ -78,7 +80,9 @@ function handleMessage(username) {
     // Reset the inactivity timer and stop the command generator
     resetInactivityTimer(username);
     if (currentCommandGenerator) {
-      sendStopMessage();
+      if (currentCommandGenerator.isActive()) {
+        sendStopMessage();
+      }
       currentCommandGenerator.stop();
     }
   }
