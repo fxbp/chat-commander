@@ -14,6 +14,10 @@ const {
   initializeSubscriptions,
 } = require('./src/comunication/subscriptionManager');
 
+const {
+  initializeActivityMonitor,
+} = require('./src/services/activityMonitorService');
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
@@ -35,6 +39,7 @@ app.whenReady().then(() => {
   createWindow();
   startServer();
   startSocketServer();
+  initializeActivityMonitor(true);
 
   ipcMain.handle('get-access-token', async () => {
     return auth.getAccessToken();
