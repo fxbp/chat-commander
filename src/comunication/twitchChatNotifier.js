@@ -1,19 +1,9 @@
-let subscribers = [];
+const { createPubSub } = require('./pubsub');
 
-function subscribe(subscriber) {
-  subscribers.push(subscriber);
-}
-
-function unsubscribe(subscriber) {
-  subscribers = subscribers.filter((sub) => sub !== subscriber);
-}
-
-function notify(message) {
-  subscribers.forEach((subscriber) => subscriber(message));
-}
+const twitchChatNotifier = createPubSub();
 
 module.exports = {
-  subscribe,
-  unsubscribe,
-  notify,
+  subscribe: twitchChatNotifier.subscribe.bind(twitchChatNotifier),
+  unsubscribe: twitchChatNotifier.unsubscribe.bind(twitchChatNotifier),
+  notify: twitchChatNotifier.notify.bind(twitchChatNotifier),
 };
