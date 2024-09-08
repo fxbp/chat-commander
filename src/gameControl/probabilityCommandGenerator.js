@@ -1,17 +1,20 @@
 const { sendMessage } = require('../comunication/emulatorNotifier');
+const {
+  sendMessage: sentToChat,
+} = require('../comunication/inactiveChatNotifier');
 
 const RANDOM_COMMAND_INTERVAL = 2 * 1000; // 1 second
 
 // Define the available commands and their corresponding probabilities
 const COMMANDS = [
-  { command: 'u', probability: 0.3 },
-  { command: 'd', probability: 0.3 },
-  { command: 'l', probability: 0.2 },
-  { command: 'r', probability: 0.2 },
-  { command: 'a', probability: 0.15 },
+  { command: 'u', probability: 0.15 },
+  { command: 'd', probability: 0.15 },
+  { command: 'l', probability: 0.15 },
+  { command: 'r', probability: 0.15 },
+  { command: 'a', probability: 0.3 },
   { command: 'b', probability: 0.05 },
-  { command: 'st', probability: 0.1 },
-  { command: 'sl', probability: 0.05 },
+  { command: 'st', probability: 0.025 },
+  { command: 'sl', probability: 0.025 },
 ];
 
 // Calculate cumulative probabilities for easier selection
@@ -31,10 +34,11 @@ function getRandomCommand() {
 }
 
 let probabilityCommandInterval = null;
+let active = false;
 
 function start() {
   if (probabilityCommandInterval) return;
-
+  active = true;
   probabilityCommandInterval = setInterval(() => {
     const randomCommand = getRandomCommand();
     const commandMessage = {
@@ -43,7 +47,14 @@ function start() {
       timestamp: new Date().toLocaleTimeString(),
     };
 
+    const commandChatMessage = {
+      username: process.env.TWITCH_USERNAME,
+      text: `(Generated command): ${randomCommand}`,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+
     sendMessage(commandMessage);
+    sentToChat(commandChatMessage);
     console.log(`Sent command: ${randomCommand}`);
   }, RANDOM_COMMAND_INTERVAL);
 }
@@ -52,10 +63,16 @@ function stop() {
   if (probabilityCommandInterval) {
     clearInterval(probabilityCommandInterval);
     probabilityCommandInterval = null;
+    active = false;
   }
+}
+
+function isActive() {
+  return active;
 }
 
 module.exports = {
   start,
   stop,
+  isActive,
 };

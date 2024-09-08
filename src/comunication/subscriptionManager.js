@@ -13,9 +13,8 @@ function initializeSubscriptions() {
   subscribe(sendToEmulator);
   subscribe(sendToActivityMonitor);
   subscribeInactive(sendToInactiveChat);
-  // If a message is sent over the socket, Twitch treats it as an echo and does not retransmit it to the socket again. Send direct message to emulator
-  // Sending input messages to Twitch chat is currently disabled
-  // subscribeEmulator(sendToInactiveChat);
+  // To avoid circular calls between subscribers and publishers, they are separated into submissions to the chat, submissions from the chat and submissions to the emulator.
+
   subscribeEmulator(sendToEmulator);
 }
 

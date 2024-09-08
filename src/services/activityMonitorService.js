@@ -8,11 +8,13 @@ function setCommandGeneratorStrategy(useProbabilityStrategy) {
     activityMonitor.setCommandGenerator({
       start: probabilityCommandGenerator.start,
       stop: probabilityCommandGenerator.stop,
+      isActive: probabilityCommandGenerator.isActive,
     });
   } else {
     activityMonitor.setCommandGenerator({
       start: randomCommandGenerator.start,
       stop: randomCommandGenerator.stop,
+      isActive: randomCommandGenerator.isActive,
     });
   }
 }

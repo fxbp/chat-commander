@@ -2,7 +2,6 @@ const WebSocket = require('ws');
 const tokenStore = require('../auth/tokenStore');
 const { refreshAccessToken } = require('../auth/auth');
 const { notify } = require('../comunication/twitchChatNotifier');
-const { subscribe } = require('../comunication/inactiveChatNotifier');
 
 let chatSocket = null;
 let reconnectTimeout = null;
