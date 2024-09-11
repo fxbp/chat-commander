@@ -12,9 +12,7 @@ const COMMANDS = [
   { command: 'l', probability: 0.15 },
   { command: 'r', probability: 0.15 },
   { command: 'a', probability: 0.3 },
-  { command: 'b', probability: 0.05 },
-  { command: 'st', probability: 0.025 },
-  { command: 'sl', probability: 0.025 },
+  { command: 'b', probability: 0.1 },
 ];
 
 // Calculate cumulative probabilities for easier selection
