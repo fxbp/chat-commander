@@ -3,15 +3,15 @@ const {
   sendMessage: sentToChat,
 } = require('../comunication/inactiveChatNotifier');
 
-const RANDOM_COMMAND_INTERVAL = 2 * 1000; // 1 second
+const RANDOM_COMMAND_INTERVAL = 4 * 1000; // 1 second
 
 // Define the available commands and their corresponding probabilities
 const COMMANDS = [
-  { command: 'u', probability: 0.15 },
-  { command: 'd', probability: 0.15 },
-  { command: 'l', probability: 0.15 },
-  { command: 'r', probability: 0.15 },
-  { command: 'a', probability: 0.3 },
+  { command: 'u', probability: 0.175 },
+  { command: 'd', probability: 0.175 },
+  { command: 'l', probability: 0.175 },
+  { command: 'r', probability: 0.175 },
+  { command: 'a', probability: 0.2 },
   { command: 'b', probability: 0.1 },
 ];
 
@@ -21,11 +21,26 @@ const cumulativeProbabilities = COMMANDS.reduce((acc, curr) => {
   return [...acc, last + curr.probability];
 }, []);
 
+// Function to get a random time component (1 to 4 seconds) formatted like "L1s", "U3s", etc.
+function addRandomTime(command) {
+  const time = Math.floor(Math.random() * 4) + 1; // Random number between 1 and 10
+  return `${command}${time}s`;
+}
+
 function getRandomCommand() {
   const random = Math.random();
   for (let i = 0; i < cumulativeProbabilities.length; i++) {
     if (random <= cumulativeProbabilities[i]) {
-      return COMMANDS[i].command;
+      const selectedCommand = COMMANDS[i].command;
+
+      // Add a random time to the command if it's not 'a' or 'b'
+      if (selectedCommand !== 'a' && selectedCommand !== 'b') {
+        // 50% chance of adding time or not
+        if (Math.random() < 0.8) {
+          return addRandomTime(selectedCommand); // Return command with time
+        }
+      }
+      return selectedCommand;
     }
   }
   return COMMANDS[COMMANDS.length - 1].command; // Fallback
