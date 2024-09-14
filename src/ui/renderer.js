@@ -33,6 +33,14 @@ document.getElementById('startButton').addEventListener('click', async () => {
   }
 });
 
+document.getElementById('stopButton').addEventListener('click', async () => {
+  try {
+    await ipcRenderer.invoke('stop-chat');
+  } catch (error) {
+    console.error('Error starting chat:', error);
+  }
+});
+
 // Handler to receive chat messages from the main process
 ipcRenderer.on('chat-message', (event, message) => {
   const chatBox = document.getElementById('chatBox');

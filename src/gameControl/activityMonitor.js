@@ -1,7 +1,7 @@
 const { sendMessage } = require('../comunication/inactiveChatNotifier');
 
 const USERNAME_TO_RESET_TIMER = process.env.TWITCH_USERNAME;
-const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+const INACTIVITY_TIMEOUT = 0.5 * 60 * 1000; // 5 minutes
 
 let inactivityTimer = null;
 let currentCommandGenerator = null; // Store the current command generator function
