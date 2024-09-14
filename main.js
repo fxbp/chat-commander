@@ -6,16 +6,18 @@ const auth = require('./src/auth/auth');
 const { startServer } = require('./src/auth/auth');
 const { validateToken } = require('./src/services/twitchAPI');
 const tokenStore = require('./src/auth/tokenStore');
-const { startChat } = require('./src/services/twitchChat');
+const { startChat, closeChatConnection } = require('./src/services/twitchChat');
 const {
   startServer: startSocketServer,
 } = require('./src/services/emulatorSocketServer');
 const {
   initializeSubscriptions,
+  unsubscribeAll,
 } = require('./src/comunication/subscriptionManager');
 
 const {
   initializeActivityMonitor,
+  stopActivityMonitor,
 } = require('./src/services/activityMonitorService');
 
 function createWindow() {
@@ -57,6 +59,12 @@ app.whenReady().then(() => {
     setTimeout(() => {
       initializeActivityMonitor(true);
     }, 2000);
+  });
+
+  ipcMain.handle('stop-chat', async () => {
+    closeChatConnection(); // Call the Twitch chat service
+    unsubscribeAll();
+    stopActivityMonitor();
   });
 
   app.on('activate', () => {

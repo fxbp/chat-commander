@@ -6,6 +6,8 @@ const { notify } = require('../comunication/twitchChatNotifier');
 let chatSocket = null;
 let reconnectTimeout = null;
 
+let connected = false;
+
 // Main function to start Twitch chat
 async function startChat() {
   // Manage WebSocket connection state
@@ -66,11 +68,29 @@ async function ensureTokenIsActive(tokenData) {
 // Function to initialize and configure the WebSocket connection
 function initializeChatSocket(accessToken, username) {
   chatSocket = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+  connected = true;
 
   chatSocket.onopen = () => handleSocketOpen(accessToken, username);
   chatSocket.onmessage = (message) => handleSocketMessage(message);
   chatSocket.onclose = () => handleSocketClose();
   chatSocket.onerror = (error) => handleSocketError(error);
+}
+
+// Function to close the WebSocket connection and clean up
+function closeChatConnection() {
+  connected = false;
+  if (chatSocket) {
+    console.log('Closing Twitch chat connection...');
+    chatSocket.close();
+    chatSocket = null;
+  }
+
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout);
+    reconnectTimeout = null;
+  }
+
+  console.log('Twitch chat connection closed.');
 }
 
 //sends message to chat
@@ -139,13 +159,17 @@ function parseChatMessage(rawMessage) {
 // Handle WebSocket close event
 function handleSocketClose() {
   console.log('Disconnected from Twitch chat');
-  attemptReconnect(); // Attempt to reconnect when the socket is closed
+  if (connected) {
+    attemptReconnect(); // Attempt to reconnect when the socket is closed
+  }
 }
 
 // Handle WebSocket error event
 function handleSocketError(error) {
   console.error('Error in Twitch chat:', error);
-  attemptReconnect(); // Attempt to reconnect on error
+  if (connected) {
+    attemptReconnect(); // Attempt to reconnect on error
+  }
 }
 
 // Attempt to reconnect to Twitch chat after a delay
@@ -163,4 +187,5 @@ function attemptReconnect() {
 module.exports = {
   startChat,
   sendToChat,
+  closeChatConnection,
 };
