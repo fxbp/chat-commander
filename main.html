@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Commander</title>
+    <link rel="stylesheet" href="styles/main.css"> <!-- Linking main.css -->
+</head>
+<body>
+    <header>
+        <div id="header-container">
+            <div id="user-info">
+                <span id="username"></span>
+                <button id="logoutButton">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="main-container">
+        <div id="controls">
+            <button id="startButton">Start</button>
+            <button id="stopButton" disabled>Stop</button>
+        </div>
+        <div id="chatBox"></div>
+    </div>
+
+    <script src="src/ui/mainRenderer.js"></script>
+</body>
+</html>

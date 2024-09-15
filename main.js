@@ -20,19 +20,33 @@ const {
   stopActivityMonitor,
 } = require('./src/services/activityMonitorService');
 
+let win;
+
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'src/ui/renderer.js'),
+      preload: path.join(__dirname, 'src/ui/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
       devTools: true,
     },
   });
 
-  win.loadFile('index.html');
+  checkTokenAndLoad();
+}
+
+// Check if token is valid, and load appropriate view
+async function checkTokenAndLoad() {
+  const token = tokenStore.loadToken();
+  if (!token || !(await validateToken(token.access_token))) {
+    // Load the login view if the token is not valid
+    win.loadFile('login.html');
+  } else {
+    // Load the main view if the token is valid
+    win.loadFile('main.html');
+  }
 }
 
 app.whenReady().then(() => {
@@ -50,7 +64,8 @@ app.whenReady().then(() => {
     if (!token) {
       throw new Error('No token found');
     }
-    return await validateToken(token.access_token);
+    const validationResult = await validateToken(token.access_token);
+    return validationResult;
   });
 
   ipcMain.handle('start-chat', async () => {
@@ -65,6 +80,13 @@ app.whenReady().then(() => {
     closeChatConnection(); // Call the Twitch chat service
     unsubscribeAll();
     stopActivityMonitor();
+  });
+
+  ipcMain.handle('logout', async () => {
+    tokenStore.deleteToken();
+    closeChatConnection();
+    stopActivityMonitor();
+    win.loadFile('login.html');
   });
 
   app.on('activate', () => {

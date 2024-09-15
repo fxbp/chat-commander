@@ -1,0 +1,81 @@
+/* styles/main.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+header {
+    width: 100%;
+    background-color: #007bff;
+    padding: 10px 20px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#header-container {
+    display: flex;
+    justify-content: flex-end; /* Align user info to the right */
+    align-items: center; /* Align items vertically */
+    height: 100%;
+}
+
+#user-info {
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+#username {
+    margin-right: 10px;
+}
+
+#logoutButton {
+    padding: 5px 10px;
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#main-container {
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#controls {
+    display: flex;
+    justify-content: flex-start; /* Align buttons side by side */
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+button:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+#chatBox {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
