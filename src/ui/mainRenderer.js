@@ -1,33 +1,19 @@
 const { ipcRenderer } = require('electron');
 
-document.getElementById('loginButton').addEventListener('click', async () => {
-  try {
-    const token = await ipcRenderer.invoke('get-access-token');
-    // Here you can do something with the token, like displaying a message or starting another function
-  } catch (error) {
-    console.error('Error during authentication:', error);
-  }
-});
+// Load user info (e.g., username) from token validation
+async function loadUserInfo() {
+  const result = await ipcRenderer.invoke('validate-token');
+  document.getElementById('username').textContent = `${result.login}`;
+}
 
-document
-  .getElementById('validateTokenButton')
-  .addEventListener('click', async () => {
-    try {
-      // Call the main process to validate the stored token
-      const result = await ipcRenderer.invoke('validate-token');
-      if (result) {
-        alert('The token is valid. User: ' + result.login);
-      } else {
-        alert('The token is not valid.');
-      }
-    } catch (error) {
-      console.error('Error during token validation:', error);
-    }
-  });
+// Call loadUserInfo on startup
+loadUserInfo();
 
 document.getElementById('startButton').addEventListener('click', async () => {
   try {
     await ipcRenderer.invoke('start-chat');
+    document.getElementById('startButton').disabled = true;
+    document.getElementById('stopButton').disabled = false;
   } catch (error) {
     console.error('Error starting chat:', error);
   }
@@ -36,9 +22,16 @@ document.getElementById('startButton').addEventListener('click', async () => {
 document.getElementById('stopButton').addEventListener('click', async () => {
   try {
     await ipcRenderer.invoke('stop-chat');
+    document.getElementById('startButton').disabled = false;
+    document.getElementById('stopButton').disabled = true;
   } catch (error) {
-    console.error('Error starting chat:', error);
+    console.error('Error stopping chat:', error);
   }
+});
+
+document.getElementById('logoutButton').addEventListener('click', () => {
+  ipcRenderer.invoke('logout');
+  window.location.href = 'login.html'; // Redirect to the login page after logout
 });
 
 // Handler to receive chat messages from the main process
@@ -49,7 +42,6 @@ ipcRenderer.on('chat-message', (event, message) => {
   messageElement.textContent = `${message.timestamp} - ${message.username}: ${message.text}`;
   chatBox.appendChild(messageElement);
 
-  // Keep only the last 10 messages
   if (chatBox.children.length > 10) {
     chatBox.removeChild(chatBox.firstChild);
   }
