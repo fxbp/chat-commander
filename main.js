@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const auth = require('./src/auth/auth');
 const { startServer } = require('./src/auth/auth');
@@ -32,9 +32,11 @@ function createWindow() {
       contextIsolation: false,
       devTools: true,
     },
+    autoHideMenuBar: true,
   });
 
   checkTokenAndLoad();
+  Menu.setApplicationMenu(null);
 }
 
 // Check if token is valid, and load appropriate view
