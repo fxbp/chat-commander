@@ -22,6 +22,8 @@ const {
 
 let win;
 
+let options = { generateActions: false };
+
 function createWindow() {
   win = new BrowserWindow({
     width: 800,
@@ -73,9 +75,6 @@ app.whenReady().then(() => {
   ipcMain.handle('start-chat', async () => {
     await startChat(); // Call the Twitch chat service
     initializeSubscriptions();
-    setTimeout(() => {
-      initializeActivityMonitor(true);
-    }, 2000);
   });
 
   ipcMain.handle('stop-chat', async () => {
@@ -89,6 +88,17 @@ app.whenReady().then(() => {
     closeChatConnection();
     stopActivityMonitor();
     win.loadFile('login.html');
+  });
+
+  ipcMain.on('send-options', (event, newOptions) => {
+    options.generateActions = newOptions.generateActions;
+    stopActivityMonitor();
+
+    if (options.generateActions) {
+      setTimeout(() => {
+        initializeActivityMonitor(true);
+      }, 2000);
+    }
   });
 
   app.on('activate', () => {
