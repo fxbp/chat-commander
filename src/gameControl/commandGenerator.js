@@ -3,6 +3,8 @@ const {
   sendMessage: sendToChat,
 } = require('../comunication/inactiveChatNotifier');
 
+const tokenStore = require('../auth/tokenStore');
+
 const RANDOM_COMMANDS = ['u', 'd', 'l', 'r', 'a', 'b', 'st'];
 const RANDOM_COMMAND_INTERVAL = 1000; // 1 second
 
@@ -16,12 +18,12 @@ function start() {
     const randomCommand =
       RANDOM_COMMANDS[Math.floor(Math.random() * RANDOM_COMMANDS.length)];
     const commandMessage = {
-      username: process.env.TWITCH_USERNAME,
+      username: tokenStore.loadToken().username,
       text: randomCommand,
       timestamp: new Date().toLocaleTimeString(),
     };
     const commandChatMessage = {
-      username: process.env.TWITCH_USERNAME,
+      username: tokenStore.loadToken().username,
       text: `(Generated command): ${randomCommand}`,
       timestamp: new Date().toLocaleTimeString(),
     };

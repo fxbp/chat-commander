@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const auth = require('./src/auth/auth');
-const { startServer } = require('./src/auth/auth');
+const { startServer, restartServer } = require('./src/auth/auth');
 const { validateToken } = require('./src/services/twitchAPI');
 const tokenStore = require('./src/auth/tokenStore');
 const { startChat, closeChatConnection } = require('./src/services/twitchChat');
@@ -17,6 +17,13 @@ const {
   initializeActivityMonitor,
   stopActivityMonitor,
 } = require('./src/services/activityMonitorService');
+
+const {
+  getDefaultSettings,
+  saveSettings,
+  getSettings,
+} = require('./src/settings/config');
+const { set } = require('express/lib/application');
 
 let win;
 
@@ -53,7 +60,8 @@ async function checkTokenAndLoad() {
 
 app.whenReady().then(() => {
   createWindow();
-  startServer();
+  const config = getSettings();
+  startServer(config);
   startSocketServer();
 
   ipcMain.handle('get-access-token', async () => {
@@ -67,6 +75,8 @@ app.whenReady().then(() => {
       throw new Error('No token found');
     }
     const validationResult = await validateToken(token.access_token);
+    const newToken = { ...token, username: validationResult.login };
+    tokenStore.saveToken(newToken);
     return validationResult;
   });
 
@@ -97,6 +107,29 @@ app.whenReady().then(() => {
         initializeActivityMonitor(true);
       }, 2000);
     }
+  });
+
+  ipcMain.on('reset-settings', (event) => {
+    const defaultSettings = getDefaultSettings();
+    saveSettings(defaultSettings);
+    restartServer(defaultSettings);
+    event.sender.send('settings-reset', defaultSettings);
+  });
+
+  ipcMain.on('save-settings', (event, settings) => {
+    try {
+      saveSettings(settings);
+      restartServer(settings);
+      event.sender.send('settings-saved');
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      event.sender.send('settings-save-error', err.message);
+    }
+  });
+
+  ipcMain.on('load-custom-settings', (event) => {
+    const customSettings = getSettings();
+    event.sender.send('settings-loaded', customSettings);
   });
 
   app.on('activate', () => {

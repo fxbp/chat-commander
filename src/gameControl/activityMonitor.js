@@ -1,6 +1,7 @@
 const { sendMessage } = require('../comunication/inactiveChatNotifier');
+const tokenStore = require('../auth/tokenStore');
 
-const USERNAME_TO_RESET_TIMER = process.env.TWITCH_USERNAME;
+const USERNAME_TO_RESET_TIMER = tokenStore.loadToken().username;
 const INACTIVITY_TIMEOUT = 3 * 60 * 1000; // 3 minutes
 
 let inactivityTimer = null;
@@ -14,7 +15,7 @@ function setCommandGenerator(generator) {
 // Function to send a message to the chat
 function sendStartMessage() {
   const startMessage = {
-    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    username: tokenStore.loadToken().username, // Adjust this if needed
     text: 'Command generator has started!',
     timestamp: new Date().toLocaleTimeString(),
   };
@@ -26,7 +27,7 @@ function sendStartMessage() {
 // Function to send a message to the chat
 function sendStopMessage() {
   const startMessage = {
-    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    username: tokenStore.loadToken().username, // Adjust this if needed
     text: 'Command generator has stopped!',
     timestamp: new Date().toLocaleTimeString(),
   };
