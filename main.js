@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const auth = require('./src/auth/auth');

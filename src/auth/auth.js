@@ -1,109 +1,94 @@
 const express = require('express');
-const axios = require('axios');
-const { URLSearchParams } = require('url');
 const tokenStore = require('./tokenStore');
 
 const app = express();
-const port = process.env.PORT || 3000;
 
+const { getConfig } = require('../settings/config');
+
+// Leer configuración desde config.json
+const config = getConfig();
+const { client_id, redirect_uri, port } = config;
+
+let resolveToken;
+
+const complete_redirect_uri = `${redirect_uri}/auth/twitch/callback`;
+
+app.use(express.json());
+
+// Ruta callback que entrega HTML para extraer el token
+app.get('/auth/twitch/callback', (req, res) => {
+  const html = `
+      <html>
+        <body>
+          <script>
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const token = params.get('access_token');
+            
+            if (token) {
+              fetch('/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+              }).then(() => {
+                document.body.innerText = "Login successful. You can close this window.";
+                setTimeout(() => {
+                  window.close();  // Cierra la ventana automáticamente después de 2 segundos
+                }, 2000);  // Espera 2 segundos para dar tiempo a que el mensaje se vea
+              });
+            } else {
+              document.body.innerText = "Failed to get token.";
+              setTimeout(() => {
+                window.close();  // También cerramos la ventana si falla
+              }, 2000);  // Espera 2 segundos en caso de error
+            }
+          </script>
+        </body>
+      </html>
+    `;
+  res.send(html);
+});
+
+// Recibe token desde el navegador
+app.post('/token', (req, res) => {
+  const { token } = req.body;
+  if (token && resolveToken) {
+    resolveToken(token);
+    resolveToken = null;
+    // Guardar el token en el tokenStore
+    tokenStore.saveToken({
+      access_token: token,
+      acquired_at: new Date().getTime(),
+      expires_in: 3600,
+    }); // Guarda el token con el tiempo de expiración
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+// Flujo principal
 async function getAccessToken() {
   const open = (await import('open')).default;
+  return new Promise((resolve) => {
+    resolveToken = resolve;
 
-  try {
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
+    const scopes = ['chat:read', 'chat:edit'];
+    const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${client_id}&redirect_uri=${complete_redirect_uri}&response_type=token&scope=${scopes.join(
+      '+'
+    )}`;
 
-    if (!clientId || !clientSecret) {
-      throw new Error('CLIENT_ID or CLIENT_SECRET are not defined');
-    }
-
-    const redirectUri = `http://localhost:${port}/auth/twitch/callback`;
-
-    // Configure the authorization URL with the appropriate scopes
-    const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=chat:read+chat:edit`;
-
-    await open(authUrl);
-
-    return new Promise((resolve, reject) => {
-      // Callback route in Express
-      app.get('/auth/twitch/callback', async (req, res) => {
-        const authCode = req.query.code;
-
-        if (!authCode) {
-          reject('Authorization code not received');
-          res.send('Authentication failed.');
-          return;
-        }
-
-        const tokenUrl = 'https://id.twitch.tv/oauth2/token';
-        const params = new URLSearchParams();
-        params.append('client_id', clientId);
-        params.append('client_secret', clientSecret);
-        params.append('code', authCode);
-        params.append('grant_type', 'authorization_code');
-        params.append('redirect_uri', redirectUri);
-
-        try {
-          const tokenResponse = await axios.post(tokenUrl, params);
-          const tokenData = tokenResponse.data;
-
-          // Save the entire token object using tokenStore
-          tokenStore.saveToken(tokenData);
-
-          resolve(tokenData.access_token);
-          res.send('Authentication successful. You can close this window.');
-        } catch (error) {
-          reject('Failed to obtain access token');
-          res.send('Authentication failed.');
-        }
-      });
-    });
-  } catch (error) {
-    console.error('Error during authentication:', error);
-    throw new Error('Authentication failed');
-  }
-}
-
-// Function to refresh the token
-async function refreshAccessToken() {
-  const tokenData = tokenStore.loadToken();
-
-  if (!tokenData || !tokenData.refresh_token) {
-    throw new Error('No refresh token available');
-  }
-
-  try {
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-
-    const params = new URLSearchParams();
-    params.append('client_id', clientId);
-    params.append('client_secret', clientSecret);
-    params.append('grant_type', 'refresh_token');
-    params.append('refresh_token', tokenData.refresh_token);
-
-    const tokenUrl = 'https://id.twitch.tv/oauth2/token';
-    const response = await axios.post(tokenUrl, params);
-    const newTokenData = response.data;
-
-    // Save the new token data
-    tokenStore.saveToken(newTokenData);
-    console.log('Refreshed Token');
-    return newTokenData.access_token;
-  } catch (error) {
-    console.error('Error refreshing the access token:', error);
-    throw new Error('Token refresh failed');
-  }
+    open(authUrl);
+  });
 }
 
 function startServer() {
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/`); // Log to confirm the server is listening
+    console.log(`Server running at http://localhost:${port}/`);
   });
 }
 
 module.exports = {
   startServer,
   getAccessToken,
-  refreshAccessToken,
 };

@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const tokenStore = require('../auth/tokenStore');
-const { refreshAccessToken } = require('../auth/auth');
+const { getAccessToken } = require('../auth/auth');
 const { notify } = require('../comunication/twitchChatNotifier');
 
 let chatSocket = null;
@@ -46,7 +46,7 @@ function manageWebSocketConnection() {
 }
 
 // Function to ensure the token is active and refresh if needed
-async function ensureTokenIsActive(tokenData) {
+async function ensureTokenIsActiveOLD(tokenData) {
   const tokenExpiryTime = tokenData.expires_in * 1000; // Convert to milliseconds
   const tokenAcquisitionTime = new Date().getTime();
 
@@ -63,6 +63,23 @@ async function ensureTokenIsActive(tokenData) {
       throw error;
     }
   }
+}
+
+// Function to ensure the token is active and refresh if needed
+async function ensureTokenIsActive(tokenData) {
+  const currentTime = new Date().getTime();
+  const tokenAcquisitionTime = tokenData.acquired_at; // Asumimos que guardas la fecha de obtención del token
+  const tokenExpiryTime = tokenData.expires_in * 1000; // Convertir a milisegundos
+
+  // Si el token ha expirado, redirigir a login
+  if (currentTime - tokenAcquisitionTime >= tokenExpiryTime) {
+    console.log('Token has expired, re-authenticating...');
+    await getAccessToken(); // Inicia el proceso de autenticación nuevamente
+    return;
+  }
+
+  // Si el token está cerca de expirar (menos de 5 minutos), no necesitamos hacer nada
+  // ya que el flujo de login ya maneja la expiración completa.
 }
 
 // Function to initialize and configure the WebSocket connection
