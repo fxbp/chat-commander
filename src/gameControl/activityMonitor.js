@@ -1,6 +1,9 @@
 const { sendMessage } = require('../comunication/inactiveChatNotifier');
+const tokenStore = require('../auth/tokenStore');
+const { use } = require('express/lib/router');
 
-const USERNAME_TO_RESET_TIMER = process.env.TWITCH_USERNAME;
+let usernameToResetTimer = '';
+let username = '';
 const INACTIVITY_TIMEOUT = 3 * 60 * 1000; // 3 minutes
 
 let inactivityTimer = null;
@@ -14,7 +17,7 @@ function setCommandGenerator(generator) {
 // Function to send a message to the chat
 function sendStartMessage() {
   const startMessage = {
-    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    username: username, // Adjust this if needed
     text: 'Command generator has started!',
     timestamp: new Date().toLocaleTimeString(),
   };
@@ -26,7 +29,7 @@ function sendStartMessage() {
 // Function to send a message to the chat
 function sendStopMessage() {
   const startMessage = {
-    username: process.env.TWITCH_USERNAME, // Adjust this if needed
+    username: username, // Adjust this if needed
     text: 'Command generator has stopped!',
     timestamp: new Date().toLocaleTimeString(),
   };
@@ -37,6 +40,8 @@ function sendStopMessage() {
 
 // Start sending commands using the current strategy
 function startInactivityTimer() {
+  username = tokenStore.loadToken().username;
+  usernameToResetTimer = username;
   inactivityTimer = setTimeout(() => {
     if (currentCommandGenerator) {
       sendStartMessage();
@@ -67,14 +72,14 @@ function resetInactivityTimer(username) {
   }
 
   // If the message is not from the specific user, set a new timer
-  if (username !== USERNAME_TO_RESET_TIMER) {
+  if (username !== usernameToResetTimer) {
     startInactivityTimer();
   }
 }
 
 // Handle message activity
 function handleMessage(username) {
-  if (username === USERNAME_TO_RESET_TIMER) {
+  if (username === usernameToResetTimer) {
     return; // Ignore messages from the specific user, don't reset the timer
   } else {
     // Reset the inactivity timer and stop the command generator

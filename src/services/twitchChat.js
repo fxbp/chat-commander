@@ -8,6 +8,8 @@ let reconnectTimeout = null;
 
 let connected = false;
 
+let username = '';
+
 // Main function to start Twitch chat
 async function startChat() {
   // Manage WebSocket connection state
@@ -16,7 +18,7 @@ async function startChat() {
   }
 
   let tokenData = tokenStore.loadToken();
-  const username = process.env.TWITCH_USERNAME;
+  username = tokenData.username;
 
   if (!tokenData || !username) {
     console.error('Access token or username not provided.');
@@ -112,8 +114,8 @@ function closeChatConnection() {
 
 //sends message to chat
 function sendToChat(message) {
-  if (message.username === process.env.TWITCH_USERNAME) {
-    chatSocket.send(`PRIVMSG #${process.env.TWITCH_USERNAME} :${message.text}`);
+  if (message.username === username) {
+    chatSocket.send(`PRIVMSG #${username} :${message.text}`);
     console.log(`Sent message to Twitch chat: ${message.text}`);
   }
 }

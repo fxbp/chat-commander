@@ -57,3 +57,71 @@ document.getElementById('applyOptionsButton').addEventListener('click', () => {
   ipcRenderer.send('send-options', options);
   alert('Options applied');
 });
+
+// ===== User dropdown logic =====
+const userButton = document.getElementById('userButton');
+const dropdownMenu = document.getElementById('dropdownMenu');
+userButton.addEventListener('click', () => {
+  dropdownMenu.classList.toggle('hidden');
+});
+
+// ===== Settings modal logic =====
+const settingsModal = document.getElementById('settingsModal');
+const settingsButton = document.getElementById('settingsButton');
+const closeSettingsModal = document.getElementById('closeSettingsModal');
+
+settingsButton.addEventListener('click', () => {
+  dropdownMenu.classList.add('hidden');
+  settingsModal.classList.remove('hidden');
+  loadSettings();
+});
+
+closeSettingsModal.addEventListener('click', () => {
+  settingsModal.classList.add('hidden');
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target === settingsModal) {
+    settingsModal.classList.add('hidden');
+  }
+  // Close the dropdown menu if clicked outside
+  if (
+    !userButton.contains(event.target) &&
+    !dropdownMenu.contains(event.target)
+  ) {
+    dropdownMenu.classList.add('hidden');
+  }
+});
+
+// SETTINGS
+
+const resetSettingsButton = document.getElementById('resetSettingsButton');
+const saveSettingsButton = document.getElementById('saveSettingsButton');
+const clientIdInput = document.getElementById('client_id');
+const portInput = document.getElementById('port');
+
+resetSettingsButton.addEventListener('click', () => {
+  ipcRenderer.send('reset-settings');
+  alert('Settings have been reset to default.');
+  loadSettings();
+});
+
+saveSettingsButton.addEventListener('click', () => {
+  const settings = {
+    client_id: clientIdInput.value,
+    port: parseInt(portInput.value, 10),
+  };
+
+  ipcRenderer.send('save-settings', settings);
+  alert('Settings have been saved.');
+  loadSettings();
+});
+
+function loadSettings() {
+  ipcRenderer.send('load-custom-settings');
+}
+
+ipcRenderer.on('settings-loaded', (event, settings) => {
+  clientIdInput.value = settings.client_id || '';
+  portInput.value = settings.port || '';
+});
