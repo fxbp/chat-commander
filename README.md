@@ -15,21 +15,28 @@ This project offers an innovative solution to enhance interactivity during Twitc
 
 Integration with Twitch is required, and for this, the Twitch API is used.
 
-A new application must be registered to authorize the Electron application via OAuth with the Twitch user [ Register Application (https://dev.twitch.tv/docs/authentication/register-app/)](https://dev.twitch.tv/docs/authentication/register-app/)
+An application has already been registered for authentication, but if you wish, you can register a new one by following the process at [ Register Application (https://dev.twitch.tv/docs/authentication/register-app/)](https://dev.twitch.tv/docs/authentication/register-app/)
 
-This provides the client-id and client-secret that the Electron application uses to connect to the Twitch API.
+The callback used by default is: http://localhost:3000/auth/twitch/callback
 
 ### Configuration
 
-Currently, a .env file is used in the root of the project with the following keys:
+Environment variables are no longer needed. Instead, the configuration is now handled through a settings.json file located in the src/settings folder. This file contains the following keys:
+
+The default aplication is listening at http://localhost:3000 with its own client_id.
 
 ```
-CLIENT_ID={client-id obtained when creating the application in the Twitch development portal}
-CLIENT_SECRET={client-secret obtained when creating the application in the Twitch development portal}
-REDIRECT_URI=http://localhost:3000
-TWITCH_USERNAME={twitch_username}
+"client_id": {client-id obtained when creating the application in the Twitch development portal}
+"redirect_uri": http://localhost:3000
+"port": 3000
 
 ```
+
+If you have created your own application you can change de "redirect_uri" and "port" according to your Twitch APP configuration.
+
+**Important:**
+
+This app is waiting the callback at **/auth/twitch/callback** so if you have your own application this is the path that must register.
 
 ## Emulator Integration
 

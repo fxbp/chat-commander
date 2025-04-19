@@ -16,12 +16,24 @@
         </div>
     </header>
 
-    <div id="main-container">
-        <div id="controls">
-            <button id="startButton">Start</button>
-            <button id="stopButton" disabled>Stop</button>
+    <div id="mainContainer">
+        <div id="chatSection">
+            <div id="controlButtons">
+                <button id="startButton">Start</button>
+                <button id="stopButton" disabled>Stop</button>
+            </div>
+            <div id="chatBox"></div>
         </div>
-        <div id="chatBox"></div>
+        
+        <!-- Options Section -->
+        <div id="optionsContainer">
+            <h2>Options</h2>
+            <div class="option">
+                <input type="checkbox" id="autoActionsCheckbox">
+                <label for="autoActionsCheckbox">Generate Actions Automatically</label>
+            </div>
+            <button id="applyOptionsButton">Apply</button> <!-- Smaller apply button -->
+        </div>
     </div>
 
     <script src="src/ui/mainRenderer.js"></script>

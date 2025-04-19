@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const auth = require('./src/auth/auth');
@@ -21,6 +19,8 @@ const {
 } = require('./src/services/activityMonitorService');
 
 let win;
+
+let options = { generateActions: false };
 
 function createWindow() {
   win = new BrowserWindow({
@@ -73,9 +73,6 @@ app.whenReady().then(() => {
   ipcMain.handle('start-chat', async () => {
     await startChat(); // Call the Twitch chat service
     initializeSubscriptions();
-    setTimeout(() => {
-      initializeActivityMonitor(true);
-    }, 2000);
   });
 
   ipcMain.handle('stop-chat', async () => {
@@ -89,6 +86,17 @@ app.whenReady().then(() => {
     closeChatConnection();
     stopActivityMonitor();
     win.loadFile('login.html');
+  });
+
+  ipcMain.on('send-options', (event, newOptions) => {
+    options.generateActions = newOptions.generateActions;
+    stopActivityMonitor();
+
+    if (options.generateActions) {
+      setTimeout(() => {
+        initializeActivityMonitor(true);
+      }, 2000);
+    }
   });
 
   app.on('activate', () => {

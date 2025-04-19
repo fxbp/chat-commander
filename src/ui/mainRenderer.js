@@ -46,3 +46,14 @@ ipcRenderer.on('chat-message', (event, message) => {
     chatBox.removeChild(chatBox.firstChild);
   }
 });
+
+// Apply Options Button logic
+document.getElementById('applyOptionsButton').addEventListener('click', () => {
+  const autoActionsEnabled = document.getElementById(
+    'autoActionsCheckbox'
+  ).checked;
+  let options = { generateActions: autoActionsEnabled };
+  // Send the new setting to the main process
+  ipcRenderer.send('send-options', options);
+  alert('Options applied');
+});
