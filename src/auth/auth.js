@@ -21,17 +21,11 @@ async function restartServer(newConfig) {
     await startServer(newConfig);
   }
   await getAccessToken();
-  const token = tokenStore.loadToken();
-  const validationResult = await validateToken(token.access_token);
-  const newToken = { ...token, username: validationResult.login };
-  tokenStore.saveToken(newToken);
 }
 
 // Flujo principal
 async function getAccessToken() {
   const open = (await import('open')).default;
-  console.log('get access token');
-  console.log(currentConfig);
   const { client_id, port } = currentConfig;
 
   return new Promise((resolve) => {
@@ -87,17 +81,22 @@ function startServer(config) {
     });
 
     // Recibe token desde el navegador
-    app.post('/token', (req, res) => {
+    app.post('/token', async (req, res) => {
       const { token } = req.body;
       if (token && resolveToken) {
         resolveToken(token);
         resolveToken = null;
         // Guardar el token en el tokenStore
+
         tokenStore.saveToken({
           access_token: token,
           acquired_at: new Date().getTime(),
           expires_in: 3600,
         }); // Guarda el token con el tiempo de expiración
+        const savedToken = tokenStore.loadToken();
+        const validationResult = await validateToken(savedToken.access_token);
+        const newToken = { ...savedToken, username: validationResult.login };
+        tokenStore.saveToken(newToken);
         res.sendStatus(200);
       } else {
         res.sendStatus(400);

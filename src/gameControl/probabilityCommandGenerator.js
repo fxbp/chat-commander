@@ -5,6 +5,7 @@ const {
 
 const tokenStore = require('../auth/tokenStore');
 
+let username = '';
 const RANDOM_COMMAND_INTERVAL = 4 * 1000; // 1 second
 
 // Define the available commands and their corresponding probabilities
@@ -52,18 +53,19 @@ let probabilityCommandInterval = null;
 let active = false;
 
 function start() {
+  username = tokenStore.loadToken().username;
   if (probabilityCommandInterval) return;
   active = true;
   probabilityCommandInterval = setInterval(() => {
     const randomCommand = getRandomCommand();
     const commandMessage = {
-      username: tokenStore.loadToken().username,
+      username: username,
       text: randomCommand,
       timestamp: new Date().toLocaleTimeString(),
     };
 
     const commandChatMessage = {
-      username: tokenStore.loadToken().username,
+      username: username,
       text: `(Generated command): ${randomCommand}`,
       timestamp: new Date().toLocaleTimeString(),
     };

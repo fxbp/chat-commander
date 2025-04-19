@@ -8,6 +8,8 @@ let reconnectTimeout = null;
 
 let connected = false;
 
+let username = '';
+
 // Main function to start Twitch chat
 async function startChat() {
   // Manage WebSocket connection state
@@ -16,7 +18,7 @@ async function startChat() {
   }
 
   let tokenData = tokenStore.loadToken();
-  const username = tokenData.username;
+  username = tokenData.username;
 
   if (!tokenData || !username) {
     console.error('Access token or username not provided.');

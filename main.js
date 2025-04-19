@@ -75,8 +75,6 @@ app.whenReady().then(() => {
       throw new Error('No token found');
     }
     const validationResult = await validateToken(token.access_token);
-    const newToken = { ...token, username: validationResult.login };
-    tokenStore.saveToken(newToken);
     return validationResult;
   });
 
